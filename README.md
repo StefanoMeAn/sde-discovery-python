@@ -1,18 +1,18 @@
 # Stochastic Differential Equation Discovery with BISDE
 
-I implemented and tested Bayesian Identification of Stochastic Differential Equations (BISDE) in Python to recover drift and diffusion terms from simulated stochastic trajectories. The project includes seven systems, from one-dimensional potentials to three-dimensional chaotic attractors.
+This project implements and evaluates Bayesian Identification of Stochastic Differential Equations (BISDE) in Python to recover drift and diffusion terms from simulated stochastic trajectories. The project includes seven systems, from one-dimensional potentials to three-dimensional chaotic attractors.
 
 In the seven fixed-seed experiments, BISDE recovered **all 36 theoretical drift terms**, although some equations also contained additional selected terms. The 3D Halvorsen system gave the cleanest results, with all 12 drift terms recovered, no extra terms, and relative coefficient errors below **0.5%**.
 
 ## Project Overview
 
-This project grew out of an earlier scientific computing notebook in which I explored how stochastic differential equations could be identified from data. I reorganized that implementation into reusable Python modules and used it to study how well sparse Bayesian inference recovers known equations from simulated trajectories.
+The project builds on an earlier scientific computing notebook about identifying stochastic differential equations from data. That implementation was reorganized into reusable Python modules to study how well sparse Bayesian inference recovers known equations from simulated trajectories.
 
-The inference method is **BISDE**, introduced by Wang et al. (2022). My work here is a Python implementation and numerical evaluation of that method, not a new inference algorithm. I kept the earlier notebook and inference code in `original/` to document the starting point.
+The inference method is **BISDE**, introduced by Wang et al. (2022). This repository provides a Python implementation and numerical evaluation of the published method, not a new inference algorithm. The earlier notebook and inference code remain in `original/` to document the starting point.
 
 ## Simulation Data
 
-There is no external dataset. I generate trajectories using **Euler–Maruyama**, with known drift and diagonal diffusion functions. Each example defines its own initial condition, time step, trajectory length, and random seed.
+There is no external dataset. Trajectories are generated using **Euler–Maruyama**, with known drift and diagonal diffusion functions. Each example defines its own initial condition, time step, trajectory length, and random seed.
 
 | Dimension | System | Drift characteristics |
 |---|---|---|
@@ -56,13 +56,13 @@ $$
 dX_t = a(X_t)\,dt + \sqrt{D(X_t)}\,dW_t,
 $$
 
-where $a$ is the drift, $D$ is the diffusion, and $W_t$ is a Wiener process. In the multidimensional experiments, I estimate each drift component and each **diagonal diffusion** component separately.
+where $a$ is the drift, $D$ is the diffusion, and $W_t$ is a Wiener process. In the multidimensional experiments, each drift component and each **diagonal diffusion** component is estimated separately.
 
 ### Polynomial library and sparse Bayesian inference
 
-I build a library of candidate polynomial terms, such as $1$, $x$, $x^2$, $xy$, and $xz$, evaluated along the simulated trajectory. BISDE uses sparse Bayesian regression to select terms and estimate their coefficients.
+A library of candidate polynomial terms, such as $1$, $x$, $x^2$, $xy$, and $xz$, is evaluated along the simulated trajectory. BISDE uses sparse Bayesian regression to select terms and estimate their coefficients.
 
-For the drift, the regression targets are the finite differences $\Delta X/\Delta t$. For diffusion, I use the squared increments after subtracting the estimated drift contribution, divided by $\Delta t$.
+For the drift, the regression targets are the finite differences $\Delta X/\Delta t$. For diffusion, the targets are squared increments after subtracting the estimated drift contribution, divided by $\Delta t$.
 
 The inference implementation is in `src/bisde.py`; library construction and simulation are in `src/polynomial_library.py` and `src/simulation.py`. The number of candidate terms and the coefficient thresholds depend on the experiment.
 
@@ -88,7 +88,7 @@ The estimated diagonal diffusion terms were close to their theoretical values in
 
 The **Halvorsen** experiment recovered the correct drift structure without extra terms, and its largest drift-coefficient error was about **0.44%**. The **Four-Wing** experiment recovered all expected terms but retained additional polynomial terms; the estimated coefficient of $x$ in its second drift equation had a relative error of about **27.19%**.
 
-These results helped me distinguish two aspects of equation discovery: estimating coefficients accurately and identifying the correct terms. A model can approximate the main dynamics while still selecting terms that are absent from the theoretical equation.
+The results highlight two aspects of equation discovery: estimating coefficients accurately and identifying the correct terms. A model can approximate the main dynamics while still selecting terms that are absent from the theoretical equation.
 
 ## Repository Structure
 
@@ -163,7 +163,7 @@ Open `notebooks/01_results_and_analysis.ipynb` and run the cells. Execution time
 
 Wang, Y., Fang, H., Jin, J., et al. (2022). *Data-Driven Discovery of Stochastic Differential Equations*. **Engineering, 17**, 244–252. [https://doi.org/10.1016/j.eng.2022.02.007](https://doi.org/10.1016/j.eng.2022.02.007).
 
-BISDE is attributed to this publication. The repository contains my Python implementation, simulations, and numerical analysis of the method.
+BISDE is attributed to this publication. The repository contains a Python implementation, simulations, and numerical analysis of the method.
 
 ## Technologies
 
